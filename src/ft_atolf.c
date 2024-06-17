@@ -1,21 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_atolf.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ssoeno <ssoeno@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/25 11:54:25 by ssoeno            #+#    #+#             */
-/*   Updated: 2024/06/10 17:20:10 by ssoeno           ###   ########.fr       */
+/*   Created: 2024/06/17 17:15:13 by ssoeno            #+#    #+#             */
+/*   Updated: 2024/06/17 17:40:51 by ssoeno           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "fractol.h"
-#include "./minilibx/mlx.h"
+#include "../fractol.h"
 
-long	parse_integer_part(char **s, int *sign)
+static double	parse_integer_part(char **s, int *sign)
 {
-	long	integer_part;
+	double	integer_part;
 
 	integer_part = 0;
 	while (**s == '+' || **s == '-')
@@ -29,13 +28,13 @@ long	parse_integer_part(char **s, int *sign)
 		integer_part = (integer_part * 10) + (**s - '0');
 		(*s)++;
 	}
-	return integer_part;
+	return (integer_part);
 }
 
-float	parse_fraction_part(char **s)
+static double	parse_fraction_part(char **s)
 {
-	float	fraction_part;
-	float	power;
+	double	fraction_part;
+	double	power;
 
 	fraction_part = 0;
 	power = 1;
@@ -47,53 +46,48 @@ float	parse_fraction_part(char **s)
 		fraction_part += (**s - '0') * power;
 		(*s)++;
 	}
-	return fraction_part;
+	return (fraction_part);
 }
 
-float ft_atof(char *s)
+double	ft_atolf(char *s)
 {
-	long	integer_part;
-	float	fraction_part;
+	double	integer_part;
+	double	fraction_part;
 	int		sign;
 
 	integer_part = 0;
 	fraction_part = 0;
 	sign = 1;
-	while (*s == 32 ||(*s >= 9 && *s <= 13))
+	while (*s == 32 || (*s >= 9 && *s <= 13))
 		s++;
 	integer_part = parse_integer_part(&s, &sign);
 	fraction_part = parse_fraction_part(&s);
 	return (sign * (integer_part + fraction_part));
 }
 
-#include <libc.h>
-__attribute__((destructor))
-static void destructor() {
-    system("leaks -q fract-ol");
-}
-int main(int ac, char **av)
+bool	is_double(char *s)
 {
-	t_fractal	fractal;
+	int	i;
+	int	count;
 
-	if ((ac == 2 && ft_strncmp(av[1], "mandelbrot", 10) == 0)
-		|| (ac == 4 && ft_strncmp(av[1], "julia", 5) == 0))
+	i = 0;
+	count = 0;
+	while (s[i])
 	{
-		fractal.name = av[1];
-		if(!ft_strncmp(av[1], "julia", 5))
+		if (!((s[i] >= '0' && s[i] <= '9') || s[i] == '.'
+				|| s[i] == '+' || s[i] == '-' ))
 		{
-			fractal.julia_x = ft_atof(av[2]);
-			printf("%f\n", ft_atof(av[2]));
-			printf("%f\n", ft_atof(av[3]));
-			fractal.julia_y = ft_atof(av[3]);
+			return (false);
 		}
-		fractal_init(&fractal);
-		fractal_render(&fractal);
-		mlx_loop(fractal.mlx_connection);
+		if (s[i] == '.')
+		{
+			count++;
+			if (count > 1)
+			{
+				return (false);
+			}
+		}
+		i++;
 	}
-	else
-	{
-		ft_printf(ERROR_MESSAGE);
-		exit(EXIT_FAILURE);
-	}
-	return (EXIT_SUCCESS);
+	return (true);
 }

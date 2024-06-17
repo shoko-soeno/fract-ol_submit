@@ -6,46 +6,49 @@
 /*   By: ssoeno <ssoeno@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/25 11:54:25 by ssoeno            #+#    #+#             */
-/*   Updated: 2024/06/10 17:06:33 by ssoeno           ###   ########.fr       */
+/*   Updated: 2024/06/17 17:30:00 by ssoeno           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FRATOL_H
-# define FRATOL_H
+#ifndef FRACTOL_H
+# define FRACTOL_H
 
 # include "./minilibx/mlx.h"
+// # include <mlx.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <math.h>
+# include <stdbool.h>
 
-#define WIDTH 500
-#define HEIGHT 500
-#define KEY_ESC 53
-#define ON_MOUSEDOWN 4
-#define ON_MOUSEUP 5
-#define ON_MOUSEMOVE 6
-#define ON_DESTROY 17
-#define ON_KEYDOWN 2
+# define WIDTH 500
+# define HEIGHT 500
+# define KEY_ESC 53
+# define ON_MOUSE_LEFT 1
+# define ON_MOUSE_RIGHT 2
+# define ON_MOUSEDOWN 4
+# define ON_MOUSEUP 5
+# define ON_MOUSEMOVE 6
+# define ON_DESTROY 17
+# define ON_KEYDOWN 2
+# define ZOOMOUT_MAX 0.0001
+# define ARROW_UP 126
+# define ARROW_DOWN 125
+# define ARROW_RIGHT 124
+# define ARROW_LEFT 123
+# define PLUS 24
+# define MINUS 27
+//color
+# define WHITE 0xFFFFFF
+# define YELLOW 0xFFFFFFF
+# define PURPLE 0x660066
 
-#define MAX_ZOOM 10.0
-#define MIN_ZOOM 0.1
-#define ERROR_MESSAGE "Please enter \n\t\"./fract-ol mandelbrot\" or \n\t\"./fract-ol julia -0.4 0.6\"\n"
-
-#define BLACK 0x000000
-#define WHITE 0xFFFFFF
-// Psychedelic colors
-#define NEON_YELLOW 0xFFFFFF00
-#define PSYCHEDELIC_PURPLE 0x660066
-
-typedef struct	s_complex
-{
-	float	x;
-	float	y;
+typedef struct s_complex {
+	double	x;
+	double	y;
 }				t_complex;
 //x real, y imaginary
 
-typedef struct	s_img
-{
+typedef struct s_img {
 	void	*img_ptr;
 	char	*pixels_ptr;
 	int		bits_per_pixel;
@@ -53,33 +56,33 @@ typedef struct	s_img
 	int		line_len;
 }				t_img;
 
-typedef struct	s_fractal
-{
+typedef struct s_fractal {
 	char	*name;
-	void	*mlx_connection; //mlx_init()
-	void	*mlx_window;	//mls_new_window()
+	void	*mlx_connection;
+	void	*mlx_window;
 	t_img	img;
-	
-	float	escape_value; //hypotenuse
-	int		iteration_definition;
-	float	shift_x;
-	float	shift_y;
-	float	zoom;
-	float	julia_x;
-	float	julia_y;
+
+	double	escape_value;
+	size_t	iteration;
+	double	shift_x;
+	double	shift_y;
+	double	zoom;
+	double	julia_x;
+	double	julia_y;
 }				t_fractal;
 
-int		ft_strncmp(char *s1, char *s2, int n);
-int		ft_printf(const char *str, ...);
-float	atodbl(char *s);
-void	fractal_init(t_fractal *fractal);
-void	fractal_render(t_fractal *fractal);
-float		map(float unscaled_num, float new_min, float new_max, float old_min, float old_max);
-t_complex	sum_complex(t_complex z1, t_complex z2);
-t_complex	square_complex(t_complex z);
-
-int		close_handler(t_fractal *fractal);
-int		mouse_handler(int button, int x, int y, t_fractal *fractal);
-int		julia_track(int x, int y, t_fractal *fractal);
+int			ft_strncmp(char *s1, char *s2, int n);
+int			ft_printf(const char *str, ...);
+void		fractal_init(t_fractal *fractal);
+void		fractal_render(t_fractal *fractal);
+void		mandelbrot_or_julia(t_complex *z, t_complex *c, t_fractal *fractal);
+double		map(double num, double new_min, double new_max, double old_max);
+int			close_window(t_fractal *fractal);
+int			key_hook(int keycode, t_fractal *fractal);
+int			mouse_handler(int button, int x, int y, t_fractal *fractal);
+int			julia_track(int x, int y, t_fractal *fractal);
+t_complex	burning_ship_next(t_complex z, t_complex c);
+double		ft_atolf(char *s);
+bool		is_double(char *s);
 
 #endif

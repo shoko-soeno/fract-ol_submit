@@ -6,24 +6,28 @@
 #    By: ssoeno <ssoeno@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/23 19:04:11 by ssoeno            #+#    #+#              #
-#    Updated: 2024/06/09 17:47:34 by ssoeno           ###   ########.fr        #
+#    Updated: 2024/06/17 18:38:14 by ssoeno           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = fract-ol
+NAME = fractol
 
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra -O3 -MMD -MP
 
-# PRINTF = ft_printf/libftprintf.a
 PRINTF = ft_printf
 LIBFT = $(PRINTF)/libft
 MLX = minilibx/libmlx.a
 
-SRCS = main.c events.c init.c render.c
+SRC_DIR = src/
+SRCS = $(SRC_DIR)main.c $(SRC_DIR)events.c $(SRC_DIR)init.c \
+	$(SRC_DIR)render.c $(SRC_DIR)render_utils.c $(SRC_DIR)ft_atolf.c
+DEPS=$(SRCS:.cpp=.d)
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
+
+-include $(OBJS:.o=.d)
 
 $(NAME): $(OBJS) $(PRINTF)/libftprintf.a $(MLX)
 	# $(CC) $(OBJS)  -Lft_printf/libft -lft -Lminilibx -lmlx -framework OpenGL -framework AppKit -o $(NAME)
@@ -32,17 +36,23 @@ $(NAME): $(OBJS) $(PRINTF)/libftprintf.a $(MLX)
 $(PRINTF)/libftprintf.a:
 	make -C $(PRINTF)
 
+$(MLX):
+	make -C minilibx
+
 %.o: %.c
-	$(CC) $(CFLAGS) -I$(PRINTF) -Imlx -c $< -o $@
+	$(CC) $(CFLAGS) -I$(PRINTF) -I./minilibx -c $< -o $@
+
+bonus: all
 
 clean:
 	make -C $(PRINTF) clean
-	${RM} ${OBJS}
+	make -C minilibx clean
+	$(RM) $(OBJS) $(OBJS:.o=.d)
 
 fclean: clean
 	make -C $(PRINTF) fclean
-	${RM} ${NAME}
+	$(RM) $(NAME)
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re bonus

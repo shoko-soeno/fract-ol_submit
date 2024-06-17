@@ -42,7 +42,6 @@ char	*ft_itoa(int n)
 	char				*s;
 	long int			int_len;
 	unsigned int		number;
-	int					sign;
 
 	int_len = ft_int_len(n);
 	s = (char *)malloc(sizeof(char) * (int_len + 1));
